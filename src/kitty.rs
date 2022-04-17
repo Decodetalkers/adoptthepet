@@ -5,8 +5,8 @@ use crate::animal::{cat::Cat, Animal, Attact};
 use std::default::Default;
 #[derive(Component)]
 pub struct Kitty {
-    pub admin: String,
-    age: i32,
+    pub admin: Option<String>,
+    pub age: i32,
     pub hp: i32,
     pub strangth: i32,
     name: String,
@@ -22,10 +22,13 @@ impl Animal for Kitty {
 impl Cat for Kitty {}
 impl Adored for Kitty {
     fn changeadmin(&mut self, admin: String) {
-        self.admin = admin;
+        self.admin = Some(admin);
     }
     fn name(&self) -> String {
         self.name.clone()
+    }
+    fn disadored(&mut self) {
+        self.admin = None;
     }
 }
 impl Attact for Kitty {
@@ -42,7 +45,7 @@ impl Attact for Kitty {
 impl Default for Kitty {
     fn default() -> Self {
         Kitty {
-            admin: "Chen".to_string(),
+            admin: None,
             age: 0,
             hp: 100,
             strangth: 2,

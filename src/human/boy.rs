@@ -16,6 +16,13 @@ impl Human for Boy {
         pet.changeadmin(self.name.clone());
         pet.grow();
     }
+    fn disadorepet<T>(&mut self, pet: &mut T)
+    where
+        T: crate::adored::Adored + crate::animal::Animal,
+    {
+        self.pet = None;
+        pet.disadored();
+    }
     fn wry<T>(&mut self, pet: &mut T)
     where
         T: crate::animal::Attact + crate::animal::Animal,
