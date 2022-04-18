@@ -74,7 +74,7 @@ fn prepare_scene(mut commands: Commands, asset_server: Res<AssetServer>) {
         text: Text {
             sections: vec![
                 TextSection {
-                    value: "Score: ".to_string(),
+                    value: "Adopted: ".to_string(),
                     style: TextStyle {
                         font: asset_server.load("fonts/FiraSans-Bold.ttf"),
                         font_size: 50.0,
@@ -110,7 +110,15 @@ fn getolder(mut query: Query<&mut Kitty>) {
     cat.grow();
     println!("{}", cat.age);
 }
-
+fn update_scoreboard(cat: Query<&Kitty>, mut query: Query<&mut Text>) {
+    let mut text = query.single_mut();
+    let cat = cat.single();
+    if let Some(admin) = &cat.admin {
+        text.sections[1].value = format!("Kitty' admin is {}", admin)
+    } else {
+        text.sections[1].value = "Kitty is disadored".to_string();
+    }
+}
 fn move_player_boy(
     keyboard_input: Res<Input<KeyCode>>,
     mut state: ResMut<Status>,
@@ -161,7 +169,7 @@ fn adore_kitty(
     let mut cat = query.single_mut();
     let mut boy = query_man.single_mut();
     let mut girl = query_girl.single_mut();
-    if keyboard_input.pressed(KeyCode::A) {
+    if keyboard_input.pressed(KeyCode::A) && state.adoredman.is_none() {
         match state.controler {
             Control::Boy => {
                 boy.adorepet(&mut *cat);
@@ -174,15 +182,16 @@ fn adore_kitty(
         }
     }
     if keyboard_input.pressed(KeyCode::D) {
-        match state.controler {
-            Control::Boy => {
+        match (&state.controler,&state.adoredman) {
+            (Control::Boy,Some(Control::Boy)) => {
                 boy.disadorepet(&mut *cat);
                 state.adoredman = None;
             }
-            Control::Girl => {
+            (Control::Girl,Some(Control::Girl)) => {
                 girl.disadorepet(&mut *cat);
                 state.adoredman = None;
             }
+            (_,_) =>{}
         }
     }
 }
@@ -231,5 +240,6 @@ fn main() {
         .add_system(adore_kitty)
         .add_system(move_kitty)
         .add_system(getolder)
+        .add_system(update_scoreboard)
         .run();
 }
