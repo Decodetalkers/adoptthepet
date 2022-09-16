@@ -3,7 +3,7 @@ mod animal;
 mod human;
 mod kitty;
 use animal::Animal;
-use bevy::{math::const_vec3, prelude::*, sprite::collide_aabb::collide};
+use bevy::{prelude::*, sprite::collide_aabb::collide};
 use human::{boy::Boy, girl::Girl, Human};
 use kitty::Kitty;
 const CAT_COLOR: Color = Color::rgb(0.3, 0.3, 0.7);
@@ -11,7 +11,7 @@ const BOY_COLOR: Color = Color::rgb(0.5, 0.3, 0.7);
 const GIRL_COLOR: Color = Color::rgb(0.3, 0.5, 0.7);
 const TEXT_COLOR: Color = Color::rgb(0.5, 0.5, 1.0);
 
-const CAT_SIZE: Vec3 = const_vec3!([40.0, 40.0, 0.0]);
+const CAT_SIZE: Vec3 = Vec3::from_array([40.0, 40.0, 0.0]);
 const BACKGROUND_COLOR: Color = Color::rgb(0.9, 0.9, 0.9);
 enum Control {
     Boy,
@@ -23,8 +23,8 @@ struct Status {
     adoredman: Option<Control>,
 }
 fn prepare_scene(mut commands: Commands, asset_server: Res<AssetServer>) {
-    commands.spawn_bundle(OrthographicCameraBundle::new_2d());
-    commands.spawn_bundle(UiCameraBundle::default());
+    commands.spawn_bundle(Camera2dBundle::default());
+    //commands.spawn_bundle(UiCameraBundle::default());
     commands
         .spawn()
         .insert(Kitty::default())
@@ -79,7 +79,6 @@ fn prepare_scene(mut commands: Commands, asset_server: Res<AssetServer>) {
                         font: asset_server.load("fonts/FiraSans-Bold.ttf"),
                         font_size: 50.0,
                         color: TEXT_COLOR,
-                        ..default()
                     },
                 },
                 TextSection {
@@ -95,7 +94,7 @@ fn prepare_scene(mut commands: Commands, asset_server: Res<AssetServer>) {
         },
         style: Style {
             position_type: PositionType::Absolute,
-            position: Rect {
+            position: UiRect {
                 top: Val::Px(5.0),
                 left: Val::Px(5.0),
                 ..default()
@@ -114,7 +113,7 @@ fn update_scoreboard(cat: Query<&Kitty>, mut query: Query<&mut Text>) {
     let mut text = query.single_mut();
     let cat = cat.single();
     if let Some(admin) = &cat.admin {
-        text.sections[1].value = format!("Kitty' admin is {}", admin)
+        text.sections[1].value = format!("Kitty's admin is {}", admin)
     } else {
         text.sections[1].value = "Kitty is disadored".to_string();
     }
@@ -144,7 +143,7 @@ fn move_player_boy(
         Control::Girl => {}
     }
     if let Some(Control::Boy) = state.adoredman {
-        state.catposition = boy_transform.translation.clone();
+        state.catposition = boy_transform.translation;
         state.catposition.x -= 50.0;
     }
 }
@@ -245,7 +244,7 @@ fn move_player_girl(
         }
     }
     if let Some(Control::Girl) = state.adoredman {
-        state.catposition = girl_transform.translation.clone();
+        state.catposition = girl_transform.translation;
         state.catposition.x -= 50.0;
     }
 }
