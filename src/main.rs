@@ -13,22 +13,24 @@ const TEXT_COLOR: Color = Color::rgb(0.5, 0.5, 1.0);
 
 const CAT_SIZE: Vec3 = Vec3::from_array([40.0, 40.0, 0.0]);
 const BACKGROUND_COLOR: Color = Color::rgb(0.9, 0.9, 0.9);
+
 enum Control {
     Boy,
     Girl,
 }
+
+#[derive(Resource)]
 struct Status {
     controler: Control,
     catposition: Vec3,
     adoredman: Option<Control>,
 }
+
 fn prepare_scene(mut commands: Commands, asset_server: Res<AssetServer>) {
-    commands.spawn_bundle(Camera2dBundle::default());
+    commands.spawn(Camera2dBundle::default());
     //commands.spawn_bundle(UiCameraBundle::default());
     commands
-        .spawn()
-        .insert(Kitty::default())
-        .insert_bundle(SpriteBundle {
+        .spawn(SpriteBundle {
             transform: Transform {
                 translation: Vec3::new(0.0, 20.0, 0.0),
                 scale: CAT_SIZE,
@@ -39,11 +41,10 @@ fn prepare_scene(mut commands: Commands, asset_server: Res<AssetServer>) {
                 ..default()
             },
             ..default()
-        });
+        })
+        .insert(Kitty::default());
     commands
-        .spawn()
-        .insert(Boy::born("Mike".to_string()))
-        .insert_bundle(SpriteBundle {
+        .spawn(SpriteBundle {
             transform: Transform {
                 translation: Vec3::new(-100.0, 0.0, 0.0),
                 scale: CAT_SIZE,
@@ -54,11 +55,10 @@ fn prepare_scene(mut commands: Commands, asset_server: Res<AssetServer>) {
                 ..default()
             },
             ..default()
-        });
+        })
+        .insert(Boy::born("Mike".to_string()));
     commands
-        .spawn()
-        .insert(Girl::born("ILISABETH".to_string()))
-        .insert_bundle(SpriteBundle {
+        .spawn(SpriteBundle {
             transform: Transform {
                 translation: Vec3::new(100.0, 0.0, 0.0),
                 scale: CAT_SIZE,
@@ -69,8 +69,9 @@ fn prepare_scene(mut commands: Commands, asset_server: Res<AssetServer>) {
                 ..default()
             },
             ..default()
-        });
-    commands.spawn_bundle(TextBundle {
+        })
+        .insert(Girl::born("ILISABETH".to_string()));
+    commands.spawn(TextBundle {
         text: Text {
             sections: vec![
                 TextSection {
@@ -104,11 +105,7 @@ fn prepare_scene(mut commands: Commands, asset_server: Res<AssetServer>) {
         ..default()
     });
 }
-//fn getolder(mut query: Query<&mut Kitty>) {
-//    let mut cat = query.single_mut();
-//    cat.grow();
-//    println!("{}", cat.age);
-//}
+
 fn update_scoreboard(cat: Query<&Kitty>, mut query: Query<&mut Text>) {
     let mut text = query.single_mut();
     let cat = cat.single();
@@ -147,6 +144,7 @@ fn move_player_boy(
         state.catposition.x -= 50.0;
     }
 }
+
 fn switch_player(keyboard_input: Res<Input<KeyCode>>, mut state: ResMut<Status>) {
     if keyboard_input.pressed(KeyCode::B) {
         state.controler = Control::Boy;
@@ -155,10 +153,12 @@ fn switch_player(keyboard_input: Res<Input<KeyCode>>, mut state: ResMut<Status>)
         state.controler = Control::Girl;
     }
 }
+
 fn move_kitty(state: Res<Status>, mut query: Query<&mut Transform, With<Kitty>>) {
     let mut cat = query.single_mut();
     cat.translation = state.catposition;
 }
+
 fn adore_kitty(
     mut state: ResMut<Status>,
     keyboard_input: Res<Input<KeyCode>>,
@@ -218,6 +218,7 @@ fn adore_kitty(
         }
     }
 }
+
 fn move_player_girl(
     keyboard_input: Res<Input<KeyCode>>,
     mut state: ResMut<Status>,
@@ -248,6 +249,7 @@ fn move_player_girl(
         state.catposition.x -= 50.0;
     }
 }
+
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
