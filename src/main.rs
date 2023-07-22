@@ -28,7 +28,7 @@ struct Status {
 
 fn prepare_scene(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn(Camera2dBundle::default());
-    //commands.spawn_bundle(UiCameraBundle::default());
+
     commands
         .spawn(SpriteBundle {
             transform: Transform {
@@ -43,6 +43,7 @@ fn prepare_scene(mut commands: Commands, asset_server: Res<AssetServer>) {
             ..default()
         })
         .insert(Kitty::default());
+
     commands
         .spawn(SpriteBundle {
             transform: Transform {
@@ -57,6 +58,7 @@ fn prepare_scene(mut commands: Commands, asset_server: Res<AssetServer>) {
             ..default()
         })
         .insert(Boy::born("Mike".to_string()));
+
     commands
         .spawn(SpriteBundle {
             transform: Transform {
@@ -71,6 +73,7 @@ fn prepare_scene(mut commands: Commands, asset_server: Res<AssetServer>) {
             ..default()
         })
         .insert(Girl::born("ILISABETH".to_string()));
+
     commands.spawn(TextBundle {
         text: Text {
             sections: vec![
@@ -95,11 +98,11 @@ fn prepare_scene(mut commands: Commands, asset_server: Res<AssetServer>) {
         },
         style: Style {
             position_type: PositionType::Absolute,
-            position: UiRect {
-                top: Val::Px(5.0),
-                left: Val::Px(5.0),
-                ..default()
-            },
+            //position: UiRect {
+            //    top: Val::Px(5.0),
+            //    left: Val::Px(5.0),
+            //    ..default()
+            //},
             ..default()
         },
         ..default()
@@ -115,6 +118,7 @@ fn update_scoreboard(cat: Query<&Kitty>, mut query: Query<&mut Text>) {
         text.sections[1].value = "Kitty is disadored".to_string();
     }
 }
+
 fn move_player_boy(
     keyboard_input: Res<Input<KeyCode>>,
     mut state: ResMut<Status>,
@@ -259,13 +263,12 @@ fn main() {
             adoredman: None,
         })
         .insert_resource(ClearColor(BACKGROUND_COLOR))
-        .add_startup_system(prepare_scene)
-        .add_system(switch_player)
-        .add_system(move_player_girl)
-        .add_system(move_player_boy)
-        .add_system(adore_kitty)
-        .add_system(move_kitty)
-        //.add_system(getolder)
-        .add_system(update_scoreboard)
+        .add_systems(Startup, prepare_scene)
+        .add_systems(Update, switch_player)
+        .add_systems(Update, move_player_girl)
+        .add_systems(Update, move_player_boy)
+        .add_systems(Update, adore_kitty)
+        .add_systems(Update, move_kitty)
+        .add_systems(Update, update_scoreboard)
         .run();
 }
