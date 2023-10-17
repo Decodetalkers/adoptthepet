@@ -98,11 +98,6 @@ fn prepare_scene(mut commands: Commands, asset_server: Res<AssetServer>) {
         },
         style: Style {
             position_type: PositionType::Absolute,
-            //position: UiRect {
-            //    top: Val::Px(5.0),
-            //    left: Val::Px(5.0),
-            //    ..default()
-            //},
             ..default()
         },
         ..default()
